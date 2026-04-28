@@ -1,0 +1,8 @@
+{
+  "name": "customer-portal",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate": "node scripts/generate-pipeline.js"
+  }
+}

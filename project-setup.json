@@ -1,0 +1,92 @@
+{
+  "$schema": "./project-setup.schema.json",
+  "extends": "./base-setup.json",
+  "version": "1.0",
+
+  "project": {
+    "name": "customer-portal",
+    "displayName": "Customer Portal",
+    "description": "External customer-facing portal for order tracking and support.",
+    "type": "external",
+    "criticality": "high",
+    "owner": "customer-platform@factory42.com",
+    "costCenter": "CC-4711",
+    "tags": ["customer-facing", "gdpr", "revenue-critical"]
+  },
+
+  "repository": {
+    "name": "customer-portal"
+  },
+
+  "framework": "react-vite",
+
+  "stages": {
+    "dev": {
+      "enabled": true,
+      "trigger": { "branch": "dev" },
+      "domain": "dev.customer-portal.factory42.io",
+      "supabase": { "projectRef": "dev-xyz" },
+      "hosting": {
+        "type": "hetzner-ssh",
+        "host": "DEV_SERVER_HOST",
+        "user": "DEV_SERVER_USER",
+        "privateKey": "DEV_SSH_PRIVATE_KEY",
+        "frontendPath": "~/test/www/html/static",
+        "backendPath": "~/apps/backend"
+      }
+    },
+    "staging": {
+      "enabled": false,
+      "trigger": { "branch": "staging" },
+      "domain": "staging.customer-portal.factory42.io",
+      "supabase": { "projectRef": "stg-xyz" },
+      "hosting": {
+        "type": "hetzner-ssh",
+        "host": "STG_SERVER_HOST",
+        "user": "STG_SERVER_USER",
+        "privateKey": "STG_SSH_PRIVATE_KEY",
+        "frontendPath": "~/staging/www/html/static",
+        "backendPath": "~/staging/apps/backend"
+      }
+    },
+    "prod": {
+      "enabled": false,
+      "trigger": { "branch": "main" },
+      "domain": "app.customer-portal.factory42.io",
+      "supabase": { "projectRef": "prd-xyz" },
+      "hosting": {
+        "type": "hetzner-ssh",
+        "host": "PROD_SERVER_HOST",
+        "user": "PROD_SERVER_USER",
+        "privateKey": "PROD_SSH_PRIVATE_KEY",
+        "frontendPath": "~/prod/www/html/static",
+        "backendPath": "~/prod/apps/backend"
+      }
+    }
+  },
+
+  "secrets": {
+    "additionalRequired": ["STRIPE_SECRET_KEY", "SENDGRID_API_KEY"]
+  },
+
+  "notifications": {
+    "slack": {
+      "webhookSecret": "SLACK_DEPLOY_WEBHOOK",
+      "channel": "#deploys-customer-portal"
+    }
+  },
+
+  "compliance": {
+    "piiClassification": "confidential"
+  },
+
+  "overrides": {
+    "quality": {
+      "unitTests": { "coverageThreshold": 98 },
+      "e2eTests": { "enabled": true }
+    },
+    "observability": {
+      "uptime": { "probeIntervalSeconds": 30 }
+    }
+  }
+}
