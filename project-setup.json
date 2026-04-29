@@ -69,12 +69,7 @@
     "additionalRequired": ["STRIPE_SECRET_KEY", "SENDGRID_API_KEY"]
   },
 
-  "notifications": {
-    "slack": {
-      "webhookSecret": "SLACK_DEPLOY_WEBHOOK",
-      "channel": "#deploys-customer-portal"
-    }
-  },
+  "notifications": {},
 
   "compliance": {
     "piiClassification": "confidential"

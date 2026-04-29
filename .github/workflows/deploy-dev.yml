@@ -154,13 +154,3 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.DEV_SUPABASE_SERVICE_ROLE_KEY }}
           PORT: ${{ secrets.DEV_PORT }}
 
-      - name: Notify Slack
-        if: always()
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          channel-id: "#deploys-customer-portal"
-          slack-message: |
-            ${{ job.status == 'success' && '✅' || '❌' }} *customer-portal* deploy ${{ job.status }}
-            <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.DEV_SLACK_DEPLOY_WEBHOOK }}
