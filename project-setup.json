@@ -25,7 +25,7 @@
       "enabled": true,
       "trigger": { "branch": "dev" },
       "domain": "dev.customer-portal.factory42.io",
-      "supabase": { "projectRef": "dev-xyz" },
+      "supabase": { "projectRef": "ahmzewylwlccdhcyjace" },
       "hosting": {
         "type": "hetzner-ssh",
         "host": "DEV_SERVER_HOST",

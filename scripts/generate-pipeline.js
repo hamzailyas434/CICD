@@ -166,6 +166,8 @@ function deployJob(stage) {
           envs: SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY,PORT
           script: |
             set -e
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             mkdir -p ${bePath}
             cd ${bePath}
             ${serverInstall}
