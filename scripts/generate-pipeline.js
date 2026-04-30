@@ -56,18 +56,37 @@ function pnpmSetupBlock() {
 }
 
 function triggerBlock(stage) {
-  const tpl     = templates[stage] ?? {};
-  const trigger = tpl.trigger ?? {};
-  // project-setup stage trigger overrides base-setup stageTemplates trigger
+  const tpl          = templates[stage] ?? {};
+  const trigger      = tpl.trigger ?? {};
   const stageTrigger = project.stages?.[stage]?.trigger ?? {};
-  const branch  = stageTrigger.branch ?? trigger.branch ?? 'main';
+  const branch       = stageTrigger.branch ?? trigger.branch ?? 'main';
+
+  const ignorePaths  = project.ci?.pathsIgnore ?? ['**.md', '.gitignore'];
+  const pathsIgnoreBlock = ignorePaths.length
+    ? `\n    paths-ignore:\n${ignorePaths.map(p => `      - '${p}'`).join('\n')}`
+    : '';
+
   if (trigger.type === 'auto') {
-    return `on:\n  push:\n    branches: [${branch}]`;
+    return `on:\n  push:\n    branches: [${branch}]${pathsIgnoreBlock}`;
   }
   if (trigger.requireReleaseTag) {
     return `on:\n  push:\n    tags: ['v*']`;
   }
   return `on:\n  workflow_dispatch:`;
+}
+
+function cacheBlock() {
+  const lockFile = pm === 'pnpm' ? 'pnpm-lock.yaml' : 'package-lock.json';
+  return `
+      - name: Cache node_modules
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            backend/node_modules
+            frontend/node_modules
+          key: \${{ runner.os }}-node_modules-\${{ hashFiles('**/${lockFile}') }}
+`;
 }
 
 function ciSteps() {
@@ -280,12 +299,14 @@ ${pnpmSetupBlock()}
       - uses: actions/setup-node@v4
         with:
           node-version: ${nodeVer}
-
+${cacheBlock()}
       - name: Install backend
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         working-directory: backend
         run: ${install}
 
       - name: Install frontend
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         working-directory: frontend
         run: ${install}
 
@@ -300,7 +321,7 @@ ${pnpmSetupBlock()}
       - uses: actions/setup-node@v4
         with:
           node-version: ${nodeVer}
-
+${cacheBlock()}
       - name: Build backend
         working-directory: backend
         run: ${install} && ${run} build
