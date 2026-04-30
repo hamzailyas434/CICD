@@ -2,7 +2,6 @@
   "$schema": "./project-setup.schema.json",
   "extends": "./base-setup.json",
   "version": "1.0",
-
   "project": {
     "name": "customer-portal",
     "displayName": "Customer Portal",
@@ -13,19 +12,21 @@
     "costCenter": "CC-4711",
     "tags": ["customer-facing", "gdpr", "revenue-critical"]
   },
-
   "repository": {
     "name": "customer-portal"
   },
-
   "framework": "react-vite",
-
   "stages": {
     "dev": {
       "enabled": true,
-      "trigger": { "branch": "dev" },
+      "environment": "Dev_Environment",
+      "trigger": {
+        "branch": "dev"
+      },
       "domain": "dev.customer-portal.factory42.io",
-      "supabase": { "projectRef": "ahmzewylwlccdhcyjace" },
+      "supabase": {
+        "projectRef": "ahmzewylwlccdhcyjace"
+      },
       "hosting": {
         "type": "hetzner-ssh",
         "host": "DEV_SERVER_HOST",
@@ -37,9 +38,13 @@
     },
     "staging": {
       "enabled": false,
-      "trigger": { "branch": "staging" },
+      "trigger": {
+        "branch": "staging"
+      },
       "domain": "staging.customer-portal.factory42.io",
-      "supabase": { "projectRef": "stg-xyz" },
+      "supabase": {
+        "projectRef": "stg-xyz"
+      },
       "hosting": {
         "type": "hetzner-ssh",
         "host": "STG_SERVER_HOST",
@@ -51,9 +56,13 @@
     },
     "prod": {
       "enabled": false,
-      "trigger": { "branch": "main" },
+      "trigger": {
+        "branch": "main"
+      },
       "domain": "app.customer-portal.factory42.io",
-      "supabase": { "projectRef": "prd-xyz" },
+      "supabase": {
+        "projectRef": "prd-xyz"
+      },
       "hosting": {
         "type": "hetzner-ssh",
         "host": "PROD_SERVER_HOST",
@@ -64,24 +73,30 @@
       }
     }
   },
-
   "secrets": {
     "additionalRequired": ["STRIPE_SECRET_KEY", "SENDGRID_API_KEY"]
   },
-
+  "docker": {
+    "enabled": false,
+    "image": "customer-portal"
+  },
   "notifications": {},
-
   "compliance": {
     "piiClassification": "confidential"
   },
-
   "overrides": {
     "quality": {
-      "unitTests": { "coverageThreshold": 98 },
-      "e2eTests": { "enabled": true }
+      "unitTests": {
+        "coverageThreshold": 98
+      },
+      "e2eTests": {
+        "enabled": true
+      }
     },
     "observability": {
-      "uptime": { "probeIntervalSeconds": 30 }
+      "uptime": {
+        "probeIntervalSeconds": 30
+      }
     }
   }
 }

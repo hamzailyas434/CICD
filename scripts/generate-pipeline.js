@@ -118,11 +118,14 @@ function deployJob(stage) {
   const bePath        = h.backendPath             ?? '~/app/backend';
   const serverInstall = pm === 'pnpm' ? 'pnpm install --prod' : 'npm ci --omit=dev';
 
+  const environment = project.stages?.[stage]?.environment ?? '';
+  const envLine = environment ? `\n    environment: ${environment}` : '';
+
   if (type === 'hetzner-ssh') {
     return `
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest${envLine}
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -198,6 +201,40 @@ ${pnpmSetupBlock()}
   }
 
   throw new Error(`Unknown hosting type: "${type}". Add it to generate-pipeline.js`);
+}
+
+function dockerJob(stage) {
+  const docker = project.docker ?? {};
+  if (!docker.enabled) return '';
+
+  const pfx       = stage.toUpperCase();
+  const registry  = cfg.dockerDefaults?.registry ?? {};
+  const imageName = docker.image ?? project.project?.name ?? 'app';
+  const regUrl    = registry.url ?? 'ghcr.io/factory42';
+  const authSecret = registry.authSecret ?? 'GHCR_TOKEN';
+
+  return `
+  docker:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: \${{ github.actor }}
+          password: \${{ secrets.${authSecret} }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${regUrl}/${imageName}:\${{ github.sha }}
+            ${regUrl}/${imageName}:${stage}`;
 }
 
 function slackStep(stage) {
@@ -288,6 +325,7 @@ ${pnpmSetupBlock()}
           name: backend-build
           path: artifacts/backend/
 ${deployJob(stage)}
+${dockerJob(stage)}
 ${slackStep(stage)}
 `;
 }

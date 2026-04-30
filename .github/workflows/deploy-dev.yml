@@ -98,6 +98,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    environment: Dev_Environment
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -153,4 +154,5 @@ jobs:
           SUPABASE_URL: ${{ secrets.DEV_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.DEV_SUPABASE_SERVICE_ROLE_KEY }}
           PORT: ${{ secrets.DEV_PORT }}
+
 
