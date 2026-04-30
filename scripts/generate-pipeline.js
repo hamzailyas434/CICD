@@ -268,6 +268,9 @@ name: Deploy ${stageName}
 
 ${triggerBlock(stage)}
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   ci:
     runs-on: ubuntu-latest
