@@ -49,7 +49,7 @@ const run     = pm === 'pnpm' ? 'pnpm'                           : 'npm run';
 function pnpmSetupBlock() {
   if (pm !== 'pnpm') return '';
   return `
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 9
 `;
